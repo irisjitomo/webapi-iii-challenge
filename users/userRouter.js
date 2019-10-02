@@ -40,7 +40,8 @@ router.get('/', (req, res) => {
 
 router.get('/:id', validateUserId, (req, res) => {
     const id = req.params.id
-    dataBase.getById(id)
+    dataBase
+    .getById(id)
     .then(user => {
         res.status(200).json(user)
     })
@@ -92,12 +93,12 @@ function validateUserId(req, res, next) {
  const user = req.body
  console.log(userId)
  console.log(user)
- if (userId) {
-     user
-     next();
+ if (!userId) {
+    res.status(400).json({ message: "invalid user id" })
  } else {
-     res.status(400).json({ message: "invalid user id" })
+    res.user = user
  }
+ next();
 };
 
 function validateUser(req, res, next) {
