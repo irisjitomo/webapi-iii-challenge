@@ -24,7 +24,7 @@ router.post('/:id/posts', validateUserId, validatePost,(req, res) => {
     })
     .catch(() => {
         res.status(500).json({ error: 'not saved'})
-    })
+    }) 
 });
 
 router.get('/', (req, res) => {
