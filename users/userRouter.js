@@ -16,12 +16,11 @@ router.post('/', validateUser, (req, res) => {
 });
 
 router.post('/:id/posts', validateUserId, validatePost,(req, res) => {
-    // const id = req.params.id
-    const newUser = req.body
+    const newPost = { ...req.body, id: req.params.id}
     dataBase
-    .insert(newUser)
+    .insert(newPost)
     .then(post => {
-        res.status(201).json(newUser)
+        res.status(201).json(post)
     })
     .catch(() => {
         res.status(500).json({ error: 'not saved'})
@@ -43,7 +42,7 @@ router.get('/:id', validateUserId, (req, res) => {
     dataBase
     .getById(id)
     .then(user => {
-        res.status(200).json(user)
+        user ? res.status(200).json(user) : res.status(404).json({error: 'does not exist'})
     })
     .catch(() => {
         res.status(500).json({ error: 'not getting data'})
@@ -74,7 +73,7 @@ router.delete('/:id', (req, res) => {
     })
 });
 
-router.put('/:id', validateUser, (req, res) => {
+router.put('/:id', validateUser, validateUserId, (req, res) => {
     const id = req.params.id
     const newUser = req.body
     dataBase.update(id, newUser)
@@ -93,8 +92,8 @@ function validateUserId(req, res, next) {
  const user = req.body
  console.log(userId)
  console.log(user)
- if (!userId) {
-    res.status(400).json({ message: "invalid user id" })
+ if (!userId || userId !== req.params.id) {
+    return res.status(404).json({ message: "invalid user id" })
  } else {
     res.user = user
  }
@@ -110,8 +109,9 @@ function validateUser(req, res, next) {
         }
       } else {
         res.status(400).json({ message: "missing user data" })
+        next();
       }
-      next();
+      
 };
 
 function validatePost(req, res, next) {
@@ -119,12 +119,13 @@ function validatePost(req, res, next) {
         if (!req.body.text){
           res.status(400).json({ message: "missing required text field" })
         } else {
-          res.json(req.body.text)
+          res.json(req.body)
+        //   next();
         }
       } else {
         res.status(400).json({ message: "missing post data" })
+        next();
       }
-      next();
 };
 
 module.exports = router;
