@@ -15,17 +15,17 @@ router.post('/', validateUser, (req, res) => {
     })
 });
 
-router.post('/:id/posts', validateUserId, validatePost,(req, res) => {
-    const newPost = { ...req.body, id: req.params.id}
-    dataBase
-    .insert(newPost)
-    .then(post => {
-        res.status(201).json(post)
-    })
-    .catch(() => {
-        res.status(500).json({ error: 'not saved'})
-    }) 
-});
+    router.post('/:id/posts', validateUserId, validatePost,(req, res) => {
+        const newPost = { ...req.body, id: req.params.id}
+        dataBase
+        .insert(newPost)
+        .then(post => {
+            res.status(201).json(post)
+        })
+        .catch(() => {
+            res.status(500).json({ error: 'not saved'})
+        }) 
+    });
 
 router.get('/', (req, res) => {
     dataBase.get()
@@ -49,17 +49,17 @@ router.get('/:id', validateUserId, (req, res) => {
     })
 });
 
-router.get('/:id/posts', (req, res) => {
-    const id = req.params.id
-    dataBase
-    .getUserPosts(id)
-    .then(user => {
-        res.status(200).json(user)
-    })
-    .catch(() => {
-        res.status(500).json({ error: 'not getting data'})
-    })
-});
+    router.get('/:id/posts', (req, res) => {
+        const id = req.params.id
+        dataBase
+        .getUserPosts(id)
+        .then(user => {
+            res.status(200).json(user)
+        })
+        .catch(() => {
+            res.status(500).json({ error: 'not getting data'})
+        })
+    });
 
 router.delete('/:id', (req, res) => {
     const id = req.params.id
