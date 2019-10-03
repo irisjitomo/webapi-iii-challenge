@@ -1,11 +1,12 @@
 const express = require('express');
-const dataBase = require('./userDb')
+const userDataBase = require('./userDb')
+const postDataBase = require('../posts/postDb')
 
 const router = express.Router();
 
 router.post('/', validateUser, (req, res) => {
     const newUser = req.body
-    dataBase
+    userDataBase
     .insert(newUser)
     .then(newUsers => {
         res.status(201).json(newUsers)
@@ -16,8 +17,8 @@ router.post('/', validateUser, (req, res) => {
 });
 
     router.post('/:id/posts', validateUserId, validatePost,(req, res) => {
-        const newPost = { ...req.body, id: req.params.id}
-        dataBase
+        const newPost = { ...req.body, user_id: req.params.id}
+        postDataBase
         .insert(newPost)
         .then(post => {
             res.status(201).json(post)
@@ -28,7 +29,7 @@ router.post('/', validateUser, (req, res) => {
     });
 
 router.get('/', (req, res) => {
-    dataBase.get()
+    userDataBase.get()
     .then(database => {
         res.status(200).json(database)
     })
@@ -39,7 +40,7 @@ router.get('/', (req, res) => {
 
 router.get('/:id', validateUserId, (req, res) => {
     const id = req.params.id
-    dataBase
+    userDataBase
     .getById(id)
     .then(user => {
         user ? res.status(200).json(user) : res.status(404).json({error: 'does not exist'})
@@ -51,7 +52,7 @@ router.get('/:id', validateUserId, (req, res) => {
 
     router.get('/:id/posts', (req, res) => {
         const id = req.params.id
-        dataBase
+        userDataBase
         .getUserPosts(id)
         .then(user => {
             res.status(200).json(user)
@@ -63,7 +64,7 @@ router.get('/:id', validateUserId, (req, res) => {
 
 router.delete('/:id', (req, res) => {
     const id = req.params.id
-    dataBase
+    userDataBase
     .remove(id)
     .then(user => {
         res.json(user)
@@ -76,7 +77,7 @@ router.delete('/:id', (req, res) => {
 router.put('/:id', validateUser, validateUserId, (req, res) => {
     const id = req.params.id
     const newUser = req.body
-    dataBase.update(id, newUser)
+    userDataBase.update(id, newUser)
     .then(changes => {
         res.json(changes)
     })
@@ -119,12 +120,10 @@ function validatePost(req, res, next) {
         if (!req.body.text){
           res.status(400).json({ message: "missing required text field" })
         } else {
-          res.json(req.body)
-        //   next();
+            next();
         }
       } else {
         res.status(400).json({ message: "missing post data" })
-        next();
       }
 };
 
