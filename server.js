@@ -12,8 +12,14 @@ function logger(req, res, next) {
   next();
 };
 
+function hello(req, res, next) {
+  console.log('hello')
+  next()
+}
+
 server.use(express.json());
 server.use(logger);
+server.use(hello)
 server.use('/api/users',  userRouter)
 server.use('/api/posts',  postRouter)
 
